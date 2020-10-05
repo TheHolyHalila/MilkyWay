@@ -42,5 +42,5 @@ class Vector2D:
         self.theta = theta
 
     def same_point_as(self, V2):
-        '''  '''
+        ''' Checks if the other vector has the same x and y '''
         return self.x == V2.x and self.y == V2.y
