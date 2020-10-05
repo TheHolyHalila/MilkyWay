@@ -76,8 +76,7 @@ class Trajectory(ABC):
 
         Notes:
         ------
-            Fast picking
-            Samples may vari in length and and not have consistant distance
+            Samples may vari in length and may not have consistant distance
 
         Arguments:
         ----------
