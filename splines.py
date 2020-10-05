@@ -1,0 +1,2 @@
+from spline_types.cubic_spline import CubicSpline
+from spline_types.natural_cubic_spline import NaturalCubicSpline

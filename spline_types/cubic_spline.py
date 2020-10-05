@@ -1,8 +1,13 @@
+import sys
+sys.path.append("..")
+
 import numpy as np
+# from .trajectory import Trajectory
 from trajectory import Trajectory
 from vector import Vector2D
 from math import *
 from waypoint import Waypoint2D as Waypoint
+from matplotlib import pyplot as plt
 
 class CubicSpline(Trajectory):
     '''
@@ -15,7 +20,7 @@ class CubicSpline(Trajectory):
     Implements the Trajectory class
     '''
 
-    def __init__(self, V1: Vector2D, V2: Vector2D, k: int = 1, number_of_points: int = 10, plan=True) -> None:
+    def __init__(self, *args, k: int = 1, number_of_points: int = 10, plan=True) -> None:
         """
         Description:
         ------------
@@ -23,10 +28,9 @@ class CubicSpline(Trajectory):
 
         Arguments:
         ----------
-            V1: The first point of the trajectory
-            V2: The last point of the trajectory
+            *args- Takes 0 or 2 Trajectory arguments
             k:  Curvature (defaults to 1)
-            number_of_points: number of points to sample (defaults to 10)
+            number_of_points: Number of points to sample (defaults to 10)
             plan: If it should 'plan' the trajectory at the init (recommended to lower runtime load)
 
         Returns:
@@ -39,19 +43,31 @@ class CubicSpline(Trajectory):
             If V1 and V2 are on the same x,y
 
         """
+
         super().__init__()
 
-        # Convarsion matrix (Ax = Y => x=A^-1 * Y) => A^-1
-        self.conversion_matrix = np.linalg.inv(np.array([[0, 0, 0, 1],
-                                                         [0, 0, 1, 0],
-                                                         [1, 1, 1, 1],
-                                                         [3, 2, 1, 0]]))
+        # Conversion matrix (Ax = Y => x=A^-1 * Y) => A^-1
+        self.conversion_matrix = self._get_conversion_matrix()
 
         self.waypoints = np.array([])
         self.coeffs = {}
+        self.planned = False
+
+
+        if len(args) != 2:
+            print(self.__class__.__name__ + ' takes exactly 0 or 2 arguments')
+            return
+
+        V1, V2 = args
 
         # Init trajectory variables
         self.create_trajectory(V1, V2, k, number_of_points, plan=plan)
+
+    def _get_conversion_matrix(self):
+        return np.linalg.inv(np.array([[0, 0, 0, 1],
+                                       [0, 0, 1, 0],
+                                       [1, 1, 1, 1],
+                                       [3, 2, 1, 0]]))
 
     def plan(self):
         # Calculate the coeffitients for the X polynom
@@ -179,6 +195,9 @@ class CubicSpline(Trajectory):
         if plan:
             self.plan()
 
+    def _get_condition_vector(self, pos_begin:float, angle_begin:float, pos_end:float, angle_end:float) -> np.ndarray:
+        return np.array([pos_begin, angle_begin, pos_end, angle_end])
+
     def calc_coeffs(self, pos_begin:float, angle_begin:float, pos_end:float, angle_end:float) -> np.ndarray:
         """
         calc_coeffs
@@ -201,8 +220,7 @@ class CubicSpline(Trajectory):
 
         """
 
-        condition_vector = np.array(
-            [pos_begin, angle_begin, pos_end, angle_end])
+        condition_vector = self._get_condition_vector(pos_begin, angle_begin, pos_end, angle_end)
 
         # Apply conversion matrix
         desired_coeffs = self.conversion_matrix.dot(condition_vector)
@@ -236,3 +254,7 @@ class CubicSpline(Trajectory):
             np.ndarray
         """
         raise NotImplementedError
+
+    def sample(self,type='linear'):
+        if self.planned:
+            self.__getattribute__(type)()

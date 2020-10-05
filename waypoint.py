@@ -11,8 +11,6 @@ class Waypoint2D(Vector2D):
         Add 'get_angular'- good question
     '''
 
-    
-
     def __init__(self, x:float, y:float, theta:float, curvature:float) -> None:
         super().__init__(x, y, theta)
         self.curvature = curvature
@@ -25,3 +23,10 @@ class Waypoint2D(Vector2D):
         -----------------
         '''
         return sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+
+    def get_point(self):
+        return self.x, self.y
+
+    def __repr__(self) -> str:
+        return 'x: {}, y: {}, theta: {}, curvature: {}'.format(self.x, self.y, self.theta, self.curvature)
+    

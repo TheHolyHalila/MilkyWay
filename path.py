@@ -6,11 +6,10 @@ Author: Hali Lev Ari
 Version: 1.0
 '''
 
-from cubic_spline import Waypoint
 from typing import List
 from trajectory import Trajectory
 import numpy as np
-
+from matplotlib import pyplot as plt
 
 class Path:
     '''
@@ -25,10 +24,10 @@ class Path:
         Concider a more generic class to inherit from
     '''
     
-    trajectories = np.array([])
-    waypoints = np.array([])
+    trajectories = []
+    waypoints = []
 
-    def __init__(self, *args: List[Trajectory]):
+    def __init__(self, *args: List[Trajectory], plan=True):
         '''
         Stich the Trajectories together
 
@@ -37,14 +36,20 @@ class Path:
             *args: Orderd list of trajectories
         '''
 
+        #Creating the path
+        self.planned = False
+
         for trajectory in args:
             self.stich(trajectory)
 
-        self.planned = False
+        if plan:
+            self.plan()
+            self.planned = True
 
     def stich(self, trajectory:Trajectory, sample='linear'):
-        ''' Adding a trajectory to the list'''
-        self.trajectories = np.append(self.trajectories, trajectory)
+        ''' Adding a trajectory to the list '''
+
+        self.trajectories.append(trajectory)
 
         if self.planned: # Runtime planning
             self.__sample_and_add(trajectory, sample)
@@ -90,10 +95,33 @@ class Path:
         ''' Method for sampling a new trajectory and concatenateing it to the waypoint array '''
 
         # Getting the aliased methods and calling them
-        trajectory.__getattr__(sample)()
+        trajectory.sample(type=sample)
 
         # Concatenating the waypoints
-        self.samples = np.concatenate(self.samples, trajectory.waypoints)
+        self.waypoints.extend(trajectory.waypoints)
+
+    def plot(self):
+        '''
+        plot
+        ====
+
+        Plots the trajectories (every trajectory in different color)
+        '''
+
+        if not self.trajectories:
+            print('No trajectories - can\'t plot')
+            return
+        
+        if not self.planned:
+            print('No points to plot from\nPlease use: path.plan() to plan the path')
+            return
+
+        #Loop though the trajectories and plot them without showing
+        for trajectory in self.trajectories:
+            trajectory.plot(show=False)
+
+        # Plot the trajectories
+        plt.show()
 
     def __iter__(self):
         '''
@@ -117,6 +145,7 @@ class Path:
 
         # Adding the trajectory to the list
         self.stich(trajectory)
+        return self
 
     def __getitem__(self,indx:int):
         '''
@@ -127,7 +156,7 @@ class Path:
         '''
 
         # Returning the nth waypoint
-        self.samples[indx]
+        return self.waypoints[indx]
 
     def __len__(self):
         '''

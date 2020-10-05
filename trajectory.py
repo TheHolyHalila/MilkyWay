@@ -10,6 +10,7 @@ Version: 1.0
 from abc import ABC, abstractmethod
 from vector import Vector2D
 import numpy as np
+from matplotlib import pyplot as plt
 
 class Trajectory(ABC):
     """
@@ -35,6 +36,8 @@ class Trajectory(ABC):
         # Making aliases
         self.linear = self.get_linear_points
         self.equidistant = self.get_equidistant_points
+
+        self.planned = False
 
     @abstractmethod
     def create_trajectory(self, V1: Vector2D, V2: Vector2D, k:int=1, number_of_points:int=10) -> bool:
@@ -115,3 +118,55 @@ class Trajectory(ABC):
             np.ndarray
         """
         raise NotImplementedError
+
+    def plot(self, show=True):
+        ''' Plotting the trajectory '''
+
+        if self.planned:
+            plt.plot(self.x, self.y)
+            if show:
+                plt.show()
+
+    def get_points(self):
+        ''' returns the Xs and the Ys of the trajectorys waypoints '''
+
+        xs = [waypoint.x for waypoint in self.waypoints]
+        ys = [waypoint.y for waypoint in self.waypoints]
+
+        return xs, ys
+
+    # Move dunder to more generalized class
+    def __getitem__(self, indx: int):
+        '''
+        Returns the nth waypoint
+
+        Example:
+        path[3] #=> the forth waypoint
+        '''
+
+        # Returning the nth waypoint
+        return self.waypoints[indx]
+
+    def __len__(self):
+        '''
+        Returning the total amount of waypoints
+
+        Example:
+        len(path)
+        '''
+
+        # Returning the length of the waypoint array
+        return len(self.waypoints)
+
+    def __iter__(self):
+        '''
+        Yielding the waypoints when useing instance as an iterator
+
+        Example:
+
+        for waypoint in path:
+            print(waypoint)
+
+        '''
+        yield from self.waypoints
+
