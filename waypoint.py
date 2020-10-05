@@ -8,7 +8,6 @@ class Waypoint2D(Vector2D):
     Implements a waypoint (x,y,theta,curvature)
     
     #Todo:
-        Add 'get_distance'- returns the euclidean distance between self and another waypoint
         Add 'get_angular'- good question
     '''
 
