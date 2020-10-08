@@ -4,15 +4,40 @@ Implements vectors
 Author: Hali Lev Ari
 Version: 1.0
 '''
+from math import sqrt
 
-class Vector2D:
+class Point2D:
+    '''
+    Implements a 2D point (x, y)
+    '''
+    def __init__(self, x:float, y:float) -> None:
+        self.x = x
+        self.y = y
+
+    def get_distance(self, other):
+        ''' 
+        get_distance
+        ============
+        Returns the euclidean distance between this waypoint and another
+        -----------------
+        '''
+        return sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+
+    def get_point(self):
+        return self.x, self.y
+
+    def same_point_as(self, other):
+        ''' Checks if the other point has the same x and y '''
+        return self.x == other.x and self.y == other.y
+
+
+class Vector2D(Point2D):
     """
     Vector2D
     ========
 
     Description:
     ------------
-
         Implements a generic 2D vector
 
     ToDo:
@@ -37,10 +62,5 @@ class Vector2D:
             theta: The angle of the vector
         '''
         # Initilize the variables
-        self.x = x
-        self.y = y
+        super().__init__(x, y)
         self.theta = theta
-
-    def same_point_as(self, V2):
-        ''' Checks if the other vector has the same x and y '''
-        return self.x == V2.x and self.y == V2.y

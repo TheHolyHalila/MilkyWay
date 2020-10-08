@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 
 import numpy as np
-from spline_types import CubicSpline
+from splines import CubicSpline
 
 class NaturalCubicSpline(CubicSpline):
     '''
