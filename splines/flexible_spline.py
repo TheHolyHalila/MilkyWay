@@ -62,8 +62,6 @@ class FlexibleSpline(Trajectory):
             # Sampling
             self.__sample_current(self.checkpoints[i].number_of_points, sample=sample)
 
-            # Encase point doesnt have an angle (to be consistant and not have "breaking" lines)
-            self.checkpoints[i+1].fix_angle(self.theta[-1])
 
     def __recursive_plan(self, i):
         if i == len(self.checkpoints)-2:
@@ -79,7 +77,7 @@ class FlexibleSpline(Trajectory):
             return
 
         elif self.checkpoints[i+1].angle == None:
-            if self.checkpoints[i+1].angle == None:
+            if self.checkpoints[i+2].angle == None:
                 self.__recursive_plan(i+1)
 
             # Plan

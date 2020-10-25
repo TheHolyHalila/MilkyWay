@@ -24,10 +24,18 @@ class FlexibleWaypoint(Vector2D):
     A flexible waypoint that helps constructing the FlexibleSpline
     '''
 
-    def __init__(self, x:float, y:float, angle=None, k=1, number_of_points=10, second_derivative=None) -> None:
+    def __init__(self, x:float, y:float, angle=None, k=1, k_start=None, k_end=None, number_of_points=10, second_derivative=None) -> None:
         self.x = x
         self.y = y
-        self.k = k
+        self.k_start = k
+        self.k_end = k
+
+        if k_start != None:
+            self.k_start = k_start
+        if k_end != None:
+            self.k_end = k_end
+
+
         self.angle = angle
         self.number_of_points = number_of_points
         self.second_derivative = second_derivative
@@ -52,12 +60,12 @@ class FlexibleWaypoint(Vector2D):
         
         # Add angles
         if self.angle != None:
-            condition_vector_x = np.append(condition_vector_x, np.cos(radians(self.angle)) * self.k)
-            condition_vector_y = np.append(condition_vector_y, np.sin(radians(self.angle)) * self.k)
+            condition_vector_x = np.append(condition_vector_x, np.cos(radians(self.angle)) * self.k_start)
+            condition_vector_y = np.append(condition_vector_y, np.sin(radians(self.angle)) * self.k_start)
 
         if last_point.angle != None:
-            condition_vector_x = np.append(condition_vector_x, np.cos(radians(last_point.angle)) * last_point.k)
-            condition_vector_y = np.append(condition_vector_y, np.sin(radians(last_point.angle)) * last_point.k)
+            condition_vector_x = np.append(condition_vector_x, np.cos(radians(last_point.angle)) * last_point.k_end)
+            condition_vector_y = np.append(condition_vector_y, np.sin(radians(last_point.angle)) * last_point.k_end)
 
 
         # Add second derivatives
