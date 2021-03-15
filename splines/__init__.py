@@ -1,3 +1,0 @@
-from splines.cubic_spline import CubicSpline
-from splines.natural_cubic_spline import NaturalCubicSpline
-from splines.flexible_spline import FlexibleSpline
