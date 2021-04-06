@@ -16,6 +16,9 @@ class Waypoint2D(Vector2D):
         super().__init__(x, y, theta)
         self.curvature = curvature
 
+    def get_data(self):
+        return [self.x, self.y, self.theta, self.curvature]
+
     def __repr__(self) -> str:
         return 'x: {}, y: {}, theta: {}, curvature: {}'.format(self.x, self.y, self.theta, self.curvature)
     

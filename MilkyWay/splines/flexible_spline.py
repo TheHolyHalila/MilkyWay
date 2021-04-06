@@ -179,7 +179,7 @@ class FlexibleSpline(Trajectory):
 
     def get_linear_points(self) -> list:
         self.plan_all()
-        return self.waypoints
+        return [(wp.get_data()) for wp in self.waypoints]
 
     def get_equidistant_points(self, amount_of_points: int) -> np.ndarray:
         raise NotImplementedError()
