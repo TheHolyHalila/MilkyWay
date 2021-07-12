@@ -48,14 +48,17 @@ spline = Spline(point1, point2, point2, ...)
 
 The parameters for the Spline are the Waypoints, the class does the rest.
 
+&nbsp;&nbsp;
+
 Some function you might use:
+
+`get_linear_points` Will return all points between all Waypoints.
 ```python
 spline.get_linear_points()
 ```
-Will return all points between Waypoints.
-
+&nbsp;
+The `plot` functions let's you view the spline, the `scatter` parameters sets the point scattering
 ```python
 spline.plot(scatter=False)
 ```
-The plot functions let's you view the spline, the `scatter` parameters sets the point scattering
 
