@@ -22,12 +22,12 @@ class Waypoint2D(Vector2D):
     def __repr__(self) -> str:
         return 'x: {}, y: {}, theta: {}, curvature: {}'.format(self.x, self.y, self.theta, self.curvature)
     
-class FlexibleWaypoint(Vector2D):
+class Waypoint(Vector2D):
     '''
-    A flexible waypoint that helps constructing the FlexibleSpline
+    A Waypoint that helps constructing the Spline
     '''
 
-    def __init__(self, x:float, y:float, angle=None, k=1, k_start=None, k_end=None, number_of_points=10, second_derivative=None) -> None:
+    def __init__(self, x:float, y:float, angle=None, k=1, k_start=None, k_end=None, points=10, der2=None) -> None:
         self.x = x
         self.y = y
         self.k_start = k
@@ -40,11 +40,11 @@ class FlexibleWaypoint(Vector2D):
 
 
         self.angle = angle
-        self.number_of_points = number_of_points
-        self.second_derivative = second_derivative
+        self.points = points
+        self.der2 = der2
 
-        # 2 (x+y) + 1 if angle + 1 if second_derivative
-        self.amount_of_conditions = 1 + int(angle != None) + int(second_derivative != None)
+        # 2 (x+y) + 1 if angle + 1 if der2
+        self.amount_of_conditions = 1 + int(angle != None) + int(der2 != None)
 
 
     def get_condition_vector(self, last_point):
@@ -72,13 +72,13 @@ class FlexibleWaypoint(Vector2D):
 
 
         # Add second derivatives
-        if self.second_derivative != None:
-            condition_vector_x = np.append(condition_vector_x, self.second_derivative)
-            condition_vector_y = np.append(condition_vector_y, self.second_derivative)
+        if self.der2 != None:
+            condition_vector_x = np.append(condition_vector_x, self.der2)
+            condition_vector_y = np.append(condition_vector_y, self.der2)
 
-        if last_point.second_derivative != None:
-            condition_vector_x = np.append(condition_vector_x, last_point.second_derivative)
-            condition_vector_y = np.append(condition_vector_y, last_point.second_derivative)
+        if last_point.der2 != None:
+            condition_vector_x = np.append(condition_vector_x, last_point.der2)
+            condition_vector_y = np.append(condition_vector_y, last_point.der2)
 
         return condition_vector_x, condition_vector_y
 
@@ -157,7 +157,7 @@ class FlexibleWaypoint(Vector2D):
             conversion_matrix[i] = last_angle_vec
 
         # Adding starting second derivative requirement
-        if hasattr(self, 'second_derivative') and getattr(self, 'second_derivative') != None:
+        if hasattr(self, 'der2') and getattr(self, 'der2') != None:
             # Create vector
             start_secder_vec = np.polyder(np.polyder(np.ones(total_conditions)))
             start_secder_vec = self.zero_fill(
@@ -167,7 +167,7 @@ class FlexibleWaypoint(Vector2D):
             conversion_matrix[i] = start_secder_vec
 
         # Adding last second derivative requirement
-        if hasattr(last_point, 'second_derivative') and getattr(last_point, 'second_derivative') != None:
+        if hasattr(last_point, 'der2') and getattr(last_point, 'der2') != None:
             # Create vector
             last_secder_vec = np.polyder(np.polyder(np.ones(total_conditions)))
             last_secder_vec = self.zero_fill(

@@ -39,7 +39,7 @@ class Trajectory(ABC):
 
         self.planned = False
 
-    def create_trajectory(self, V1: Vector2D, V2: Vector2D, k:int=1, number_of_points:int=10) -> bool:
+    def create_trajectory(self, V1: Vector2D, V2: Vector2D, k:int=1, points:int=10) -> bool:
         """
         create_trajectory
         =================

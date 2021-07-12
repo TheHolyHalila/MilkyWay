@@ -3,16 +3,16 @@ sys.path.append("..")
 from ..trajectory import Trajectory
 import numpy as np
 from math import radians
-from ..waypoint import FlexibleWaypoint, Waypoint2D
+from ..waypoint import Waypoint, Waypoint2D
 from matplotlib import pyplot as plt
 
-class FlexibleSpline(Trajectory):
+class Spline(Trajectory):
     '''
-    FlexibleSpline
+    Spline
     =================
 
     Closer to the 'Path' class
-    We recommend using FlexibleSpline rather than the 'Path' class
+    We recommend using Spline rather than the 'Path' class
     '''
 
     waypoints = []
@@ -22,22 +22,22 @@ class FlexibleSpline(Trajectory):
     curvature = np.array([])
     coeffs = {}
 
-    def __init__(self, *args, plan=True, sample='linear', default_number_of_points=10) -> None:
+    def __init__(self, *args, plan=True, sample='linear', default_no_points=10) -> None:
         '''
-        args: More than 1 FlexibleWaypoint
+        args: More than 1 Waypoint
         '''
         if len(args) < 2:
-            print('FlexibleSpline needs more than 1 FlexibleWaypoints')
+            print('Spline needs more than 1 Waypoints')
             return
         
         self.checkpoints = list(args) # Needs a better name
-        self.default_number_of_points = default_number_of_points
+        self.default_no_points = default_no_points
 
         if plan:
             self.plan_all(sample=sample)
-            self.planned = True
-        else:
-            self.planned = False
+            
+        self.planned = plan
+
 
     def reset(self):
         self.waypoints = []
@@ -60,10 +60,14 @@ class FlexibleSpline(Trajectory):
             self.__plan(self.checkpoints[i], self.checkpoints[i+1])
 
             # Sampling
-            self.__sample_current(self.checkpoints[i].number_of_points, sample=sample)
+            self.__sample_current(self.checkpoints[i].points, sample=sample)
 
 
     def __recursive_plan(self, i):
+        '''
+        Ok so turns out this isn't broken, I have no idea why it's important but never touch this function.
+        It somehow fixes the broken angles at non-specified waypoint.
+        '''
         if i == len(self.checkpoints)-2:
             # Plan
             self.__plan(self.checkpoints[i], self.checkpoints[i+1])
@@ -92,7 +96,7 @@ class FlexibleSpline(Trajectory):
         self.__recursive_plan(i+1)
         
 
-    def __plan(self, first_point: FlexibleWaypoint, last_point: FlexibleWaypoint):
+    def __plan(self, first_point: Waypoint, last_point: Waypoint):
         # Set the conversion matrix
         self.__set_conversion_matrix(first_point, last_point)
 
@@ -112,13 +116,13 @@ class FlexibleSpline(Trajectory):
         self.coeffs['yd_coeffs'] = np.polyder(self.coeffs['y_coeffs'])
         self.coeffs['ydd_coeffs'] = np.polyder(self.coeffs['yd_coeffs'])
 
-    def __sample_current(self, number_of_points, sample='linear'):
-        if number_of_points==None:
-            number_of_points = self.default_number_of_points
+    def __sample_current(self, points, sample='linear'):
+        if points==None:
+            points = self.default_no_points
 
 
         # Creating points to sample from
-        s = self.get_s(number_of_points, sample=sample)
+        s = self.get_s(points, sample=sample)
 
         # Sampling every function
         self.x = np.append(self.x, np.polyval(self.coeffs['x_coeffs'], s))
@@ -137,11 +141,11 @@ class FlexibleSpline(Trajectory):
             self.x, self.y, self.theta, self.curvature)])
 
 
-    def _get_condition_vector(self, first_point: FlexibleWaypoint, last_point: FlexibleWaypoint) -> np.ndarray:
+    def _get_condition_vector(self, first_point: Waypoint, last_point: Waypoint) -> np.ndarray:
         # Setting second derivatives to 0
         return first_point._get_condition_vector(last_point)
 
-    def __set_conversion_matrix(self, first_point: FlexibleWaypoint, last_point: FlexibleWaypoint):
+    def __set_conversion_matrix(self, first_point: Waypoint, last_point: Waypoint):
         # Returns the convarsion matrix
         self.conversion_matrix = first_point.get_conversion_matrix(last_point)
 
@@ -165,7 +169,7 @@ class FlexibleSpline(Trajectory):
 
         return desired_coeffs
 
-    def get_s(self, number_of_points,sample='linear'):
+    def get_s(self, points,sample='linear'):
         '''
         get_s
         =====
@@ -175,7 +179,7 @@ class FlexibleSpline(Trajectory):
         '''
 
         if sample == 'linear':
-            return  np.linspace(0, 1, number_of_points)
+            return  np.linspace(0, 1, points)
 
     def get_linear_points(self) -> list:
         self.plan_all()

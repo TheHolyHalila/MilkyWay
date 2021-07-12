@@ -11,8 +11,8 @@ class NaturalCubicSpline(CubicSpline):
 
     Same as a cubic spline but with second derivatives set to 0 at edges
     '''
-    def __init__(self, *args, k: int = 1, number_of_points: int = 10, plan=True) -> None:
-        super(NaturalCubicSpline, self).__init__(*args, k=k, number_of_points=number_of_points, plan=plan)
+    def __init__(self, *args, k: int = 1, points: int = 10, plan=True) -> None:
+        super(NaturalCubicSpline, self).__init__(*args, k=k, points=points, plan=plan)
 
     def _get_condition_vector(self, pos_begin: float, angle_begin: float, pos_end: float, angle_end: float) -> np.ndarray:
         # Setting second derivatives to 0

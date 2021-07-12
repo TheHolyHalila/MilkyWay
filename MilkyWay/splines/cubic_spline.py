@@ -19,7 +19,7 @@ class CubicSpline(Trajectory):
     Implements the Trajectory class
     '''
 
-    def __init__(self, *args, k: int = 1, number_of_points: int = 10, plan=True) -> None:
+    def __init__(self, *args, k: int = 1, points: int = 10, plan=True) -> None:
         """
         Description:
         ------------
@@ -29,7 +29,7 @@ class CubicSpline(Trajectory):
         ----------
             *args- Takes 0 or 2 Trajectory arguments
             k:  Curvature (defaults to 1)
-            number_of_points: Number of points to sample (defaults to 10)
+            points: Number of points to sample (defaults to 10)
             plan: If it should 'plan' the trajectory at the init (recommended to lower runtime load)
 
         Returns:
@@ -60,7 +60,7 @@ class CubicSpline(Trajectory):
         V1, V2 = args
 
         # Init trajectory variables
-        self.create_trajectory(V1, V2, k, number_of_points, plan=plan)
+        self.create_trajectory(V1, V2, k, points, plan=plan)
 
     def _get_conversion_matrix(self):
         return np.linalg.inv(np.array([[0, 0, 0, 1],
@@ -91,7 +91,7 @@ class CubicSpline(Trajectory):
         self.coeffs['ydd_coeffs'] = np.polyder(self.coeffs['yd_coeffs'])
         self.planned = True
 
-    def get_linear_points(self, number_of_points=None) -> np.ndarray:
+    def get_linear_points(self, points=None) -> np.ndarray:
         """
         get_linear_points
         =================
@@ -117,14 +117,14 @@ class CubicSpline(Trajectory):
         ------
             np.ndarray
         """
-        if number_of_points==None:
-            number_of_points = self.number_of_points
+        if points==None:
+            points = self.points
 
         if not self.planned:
             self.plan()
 
         # Creating points to sample from
-        s = np.linspace(0, 1, number_of_points)
+        s = np.linspace(0, 1, points)
 
         # Sampling every function
         self.x = np.polyval(self.coeffs['x_coeffs'], s)
@@ -144,7 +144,7 @@ class CubicSpline(Trajectory):
 
         return self.waypoints
 
-    def create_trajectory(self, first_point:Vector2D, last_point:Vector2D, k:float, number_of_points:int,plan=True) -> bool:
+    def create_trajectory(self, first_point:Vector2D, last_point:Vector2D, k:float, points:int,plan=True) -> bool:
         """
         create_trajectory
         =================
@@ -177,7 +177,7 @@ class CubicSpline(Trajectory):
             self.possible_trajectory = False
             raise ValueError('Picked 2 points in the same place')
 
-        if number_of_points.__class__.__name__ != 'int' or number_of_points < 2:
+        if points.__class__.__name__ != 'int' or points < 2:
             raise ValueError('Invalid number of points')
 
         # Not the same point - can create a trajectory
@@ -186,7 +186,7 @@ class CubicSpline(Trajectory):
         # Set instance variables
         self.first_point = first_point
         self.last_point = last_point
-        self.number_of_points = number_of_points
+        self.points = points
         self.k = k
 
         self.waypoints = np.array([])

@@ -54,7 +54,7 @@ class Path:
         if self.planned: # Runtime planning
             self.__sample_and_add(trajectory, sample)
 
-    def build_and_stich(self, TrajectoryObj:Trajectory ,first_vector, last_vector, k=1, number_of_points=10, sample='linear'):
+    def build_and_stich(self, TrajectoryObj:Trajectory ,first_vector, last_vector, k=1, points=10, sample='linear'):
         '''
         build_and_stich
         ================
@@ -68,7 +68,7 @@ class Path:
         '''
 
         # Init the trajectory
-        new_trajectory = TrajectoryObj(first_vector, last_vector, k=k, number_of_points=number_of_points)
+        new_trajectory = TrajectoryObj(first_vector, last_vector, k=k, points=points)
 
         # Stich it in the array
         self.stich(new_trajectory, sample=sample)
