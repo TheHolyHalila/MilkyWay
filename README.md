@@ -57,7 +57,7 @@ Some function you might use:
 spline.get_linear_points()
 ```
 &nbsp;
-The `plot` functions let's you view the spline, the `scatter` parameters sets the point scattering
+The `plot` functions lets you view the spline, the `scatter` parameters sets the point scattering
 ```python
 spline.plot(scatter=False)
 ```
